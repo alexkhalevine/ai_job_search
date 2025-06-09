@@ -1,0 +1,23 @@
+export const bannedKeywords = [
+  'friseur',
+  'koch',
+  'chef',
+  'küche',
+  'sales',
+  'gastronomie',
+  'pflege',
+  'reinigung',
+  'meister',
+  'verkauf',
+  'kanzlei',
+  'backstube',
+  'kantine',
+  'entwickler',
+  'filialleiter',
+  'lager',
+  'fahrer',
+  'elektrotechnik',
+  'data-excellence',
+  'buchhalter',
+  'engineer'
+];
