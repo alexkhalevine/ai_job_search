@@ -39,6 +39,7 @@ async function fetchGoogleJobs(
           .join(", "),
       url:
         job.apply_options.map((opt: any) => `${opt.title}: ${opt.link}`),
+      source: "google jobs"
     })
   );
 
@@ -46,9 +47,11 @@ async function fetchGoogleJobs(
 }
 
 export async function scrapeGoogleJobs(): Promise<JobPost[]> {
-  //const queries = ['sustainability', 'life cycle assessment', 'resource management'];
-  const queries = ["sustainability"];
-  const locations = ["Vienna"];
+  const defaultQuery = process.env.WEBSCRAPPER_SEARCH_QUERY || 'sustainability'
+  const defaultLocation = process.env.LOCATION || 'Wien'
+
+  const queries = [defaultQuery, 'life cycle assessment', 'resource management'];
+  const locations = [defaultLocation];
 
   const allJobs: JobPost[] = [];
 

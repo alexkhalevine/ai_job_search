@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { JobPost } from '../utils/types'; // assuming you already defined this
@@ -5,11 +7,13 @@ import { JobPost } from '../utils/types'; // assuming you already defined this
 const BASE_URL = 'https://www.stepstone.at';
 const SEARCH_URL = `${BASE_URL}/jobs`;
 
-const QUERY = 'nachhaltigkeit';
-const LOCATION = 'wien?radius=10';
+const QUERY = process.env.SEARCH_QUERY;
+const LOCATION = process.env.LOCATION
 
 export async function scrapeStepstone(): Promise<JobPost[]> {
   const url = `${SEARCH_URL}/${QUERY}/in-${LOCATION}`;
+
+  console.log('... scrapping stepstone.at ', url)
   
   const { data: html } = await axios.get(url);
   
@@ -36,6 +40,7 @@ export async function scrapeStepstone(): Promise<JobPost[]> {
       remote: true, // todo: implement remote detection
       description,
       url,
+      source: "stepstone.at"
     });
   });
 

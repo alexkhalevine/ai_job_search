@@ -5,4 +5,5 @@ export interface JobPost {
   remote: boolean;
   description: string;
   url: string;
+  source: string
 }

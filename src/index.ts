@@ -24,6 +24,8 @@ async function main() {
 
     console.log(`Found ${relevantJobs.length} relevant jobs.`);
 
+    console.log(relevantJobs)
+
     for (const job of relevantJobs) {
         console.log(".. ", job.title);
         console.log(".. ", job.url);

@@ -1,14 +1,14 @@
-## This small experimental job seeker that uses custom web scrappers.
+## Small experimental job seeker that uses custom web scrappers.
 
 Currently scrapping: `karriere.at`, `stepstone.at` and `google jobs` via serpAPI
 
 --
 
-- to install do `npm i` in root folder
-- rename `.env.example` to `.env` and add correct values
-- to run as console app, run `npm run start` in root folder
-- important: serptAPI that fetches google jobs is limited to 100 requests per month, check limit on https://serpapi.com/dashboard
-- there is openAPi integration, prompt can be changed in `aiAgent.ts`. By default openAI is disabled, uncomment 
+- Install with `npm i` in root folder
+- Rename `.env.example` to `.env` and add correct env vars
+- Run in your terminal `npm run start` in root folder
+- Important: serptAPI that fetches google jobs is limited to 100 requests per month on free plan, check limit on https://serpapi.com/dashboard
+- There is openAPi integration, prompt can be changed in `aiAgent.ts`. By default openAI is disabled, uncomment:
 
 ```
 /*   for (const job of relevantJobs) {
@@ -28,4 +28,4 @@ and
 import { analyzeJob } from './utils/aiAgent';
 ```
 
-to enable found job summary
+to enable AI job summary
