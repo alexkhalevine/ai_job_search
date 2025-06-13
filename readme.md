@@ -1,6 +1,11 @@
-## this is job seeker that uses 3 scrappers: karriere.at, stepstone.at and google jobs via serpAPI
+## This small experimental job seeker that uses custom web scrappers.
+
+Currently scrapping: `karriere.at`, `stepstone.at` and `google jobs` via serpAPI
+
+--
 
 - to install do `npm i` in root folder
+- rename `.env.example` to `.env` and add correct values
 - to run as console app, run `npm run start` in root folder
 - important: serptAPI that fetches google jobs is limited to 100 requests per month, check limit on https://serpapi.com/dashboard
 - there is openAPi integration, prompt can be changed in `aiAgent.ts`. By default openAI is disabled, uncomment 
