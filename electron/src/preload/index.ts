@@ -31,7 +31,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Job search functionality
   searchJobs: async (
     config: SearchConfig
-  ): Promise<{ success: boolean; data?: JobPost[]; error?: string }> => {
+  ): Promise<{
+    success: boolean
+    data?: JobPost[]
+    error?: string
+    meta: { discardedCount: number }
+  }> => {
     return await ipcRenderer.invoke('search-jobs', config)
   },
 

@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { JobScraperService } from './jobScraperService'
-
+import { isRelevantJob } from '../utils/filters'
 const isDev = process.env.NODE_ENV === 'development'
 const jobScraperService = JobScraperService.getInstance()
 
@@ -33,7 +33,7 @@ function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
-    height: 670,
+    height: 900,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -100,8 +100,18 @@ app.on('window-all-closed', () => {
 ipcMain.handle('search-jobs', async (event, config: SearchConfig) => {
   try {
     console.log('Received search request:', config)
-    const jobs = await jobScraperService.searchJobs(config)
-    return { success: true, data: jobs }
+    const karriereJobs = await jobScraperService.searchJobs(config)
+
+    const allJobs = [...karriereJobs]
+
+    const relevantJobs = allJobs.filter(isRelevantJob)
+    const discardedJobs = allJobs.length - relevantJobs.length
+
+    console.log(
+      `Total jobs found: ${allJobs.length}, Relevant jobs: ${relevantJobs.length}, Discarded jobs: ${discardedJobs}`
+    )
+
+    return { success: true, data: relevantJobs, meta: { discardedCount: discardedJobs } }
   } catch (error) {
     console.error('Error in search-jobs handler:', error)
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
