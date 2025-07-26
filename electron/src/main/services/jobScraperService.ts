@@ -35,6 +35,61 @@ export class JobScraperService {
     return JobScraperService.instance
   }
 
+  public async scrapStepstone(config: SearchConfig): Promise<JobPost[]> {
+    const url = `https://www.stepstone.at/jobs/${config.searchQuery}/in-${config.location}`
+
+    console.log('... scraping stepstone.at ', url)
+
+    try {
+      const { data: html } = await axios.get(url)
+
+      const $ = cheerio.load(html)
+      const jobPosts: JobPost[] = []
+
+      $('article[role="button"]').each((_, el) => {
+        const title = $(el).find('a[data-testid="job-item-title"] > div > div > div').text().trim()
+
+        const company = $(el)
+          .find('[data-at="job-item-company-name"] > span > [data-genesis-element="TEXT"]')
+          .text()
+          .trim()
+
+        const location = $(el)
+          .find('[data-at="job-item-location"] > [data-genesis-element="TEXT"]')
+          .text()
+          .trim()
+
+        const url = BASE_URL + $(el).find('a[data-testid="job-item-title"]').attr('href')
+
+        // No full description here – so we use a placeholder
+        const isRemote = $(el)
+          .find('[data-at="job-item-work-from-home"] > [data-genesis-element="TEXT"]')
+          .text()
+          .trim()
+        const description =
+          $(el).find('[data-at="jobcard-content"] span').text().trim() +
+          '. Work from home: ' +
+          isRemote
+
+        jobPosts.push({
+          title,
+          company,
+          location,
+          remote: true, // todo: implement remote detection
+          description,
+          url,
+          source: 'stepstone.at'
+        })
+      })
+      console.log(`Found ${jobPosts.length} jobs from stepstone.at.`)
+
+      return jobPosts
+    } catch (error) {
+      console.error('Error scraping stepston.at:', error)
+      throw new Error(`Failed to scrape stepston.at: ${error}`)
+    }
+  }
+
   public async scrapeKarriere(config: SearchConfig): Promise<JobPost[]> {
     const query = `keywords=${config.searchQuery}&locations=${config.location}`
     const url = `${BASE_URL}?${query}`
@@ -99,8 +154,28 @@ export class JobScraperService {
   }
 
   public async searchJobs(config: SearchConfig): Promise<JobPost[]> {
-    // For now, only karriere.at, but can be extended to other sources
-    const karriereJobs = await this.scrapeKarriere(config)
-    return karriereJobs
+    // Run both scrapers in parallel and handle failures gracefully
+    const [karriereJobs, stepstoneJobs] = await Promise.allSettled([
+      this.scrapeKarriere(config),
+      this.scrapStepstone(config)
+    ])
+
+    const allJobs: JobPost[] = []
+
+    // Handle karriere.at results
+    if (karriereJobs.status === 'fulfilled') {
+      allJobs.push(...karriereJobs.value)
+    } else {
+      console.error('Karriere.at scraping failed:', karriereJobs.reason)
+    }
+
+    // Handle stepstone.at results
+    if (stepstoneJobs.status === 'fulfilled') {
+      allJobs.push(...stepstoneJobs.value)
+    } else {
+      console.error('Stepstone.at scraping failed:', stepstoneJobs.reason)
+    }
+
+    return allJobs
   }
 }

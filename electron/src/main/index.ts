@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { JobScraperService } from './jobScraperService'
+import { JobScraperService } from './services/jobScraperService'
 import { isRelevantJob } from '../utils/filters'
 const isDev = process.env.NODE_ENV === 'development'
 const jobScraperService = JobScraperService.getInstance()
@@ -100,9 +100,9 @@ app.on('window-all-closed', () => {
 ipcMain.handle('search-jobs', async (event, config: SearchConfig) => {
   try {
     console.log('Received search request:', config)
-    const karriereJobs = await jobScraperService.searchJobs(config)
+    const foundJobs = await jobScraperService.searchJobs(config)
 
-    const allJobs = [...karriereJobs]
+    const allJobs = [...foundJobs]
 
     const relevantJobs = allJobs.filter(isRelevantJob)
     const discardedJobs = allJobs.length - relevantJobs.length

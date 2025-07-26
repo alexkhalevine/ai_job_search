@@ -32,5 +32,8 @@ export const bannedKeywords = [
   'owner',
   'analyst',
   'housekeeping',
-  'trainer'
+  'trainer',
+  'architekt',
+  'network',
+  'gruppenleiter'
 ]
